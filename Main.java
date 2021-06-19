@@ -5,6 +5,8 @@ public class Main {
 
     public static void main(String[] args) {
 
+        // Milestone 1 : Create the CSV reader and populate data structure
+
         ItemMap item_map = new ItemMap();   // Data structure
         CSVReader csvreader = new CSVReader("stocks.csv", item_map);    // CSV reader
         csvreader.read();   //item_map gets populated with data
