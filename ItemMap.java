@@ -6,10 +6,4 @@ public class ItemMap extends HashMap<String, Item>{
 	// TODO : Implement any methods required to query/update the data structure.
     //HashMap<String, Item> item_map = new HashMap<>();
 
-
-
-
-
-
-
 }

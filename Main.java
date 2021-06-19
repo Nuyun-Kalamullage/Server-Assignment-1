@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 
 public class Main {
@@ -11,11 +13,26 @@ public class Main {
         CSVReader csvreader = new CSVReader("stocks.csv", item_map);    // CSV reader
         csvreader.read();   //item_map gets populated with data
 
+        int x = 0;
+        try {
+            ServerSocket ss = new ServerSocket(2021);
+            while (true){
+                System.out.println("Waiting for clients....");
+                Socket socket = ss.accept(); // if error must close the socket
+                System.out.flush();
+
+                // Milestone 2 : Create a server and accept 1 connection
+                Server server = new Server(item_map,socket);   // Server
+                server.start();       // Server starts running here.
+                item_map.values().getClass().getName();
+                System.out.println("Client "+(x+1)+ " Connected");
+                x++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
-        // Milestone 2 : Create a server and accept 1 connection
-        Server server = new Server(item_map);   // Server
-        server.start();       // Server starts running here.
 
 
         // Milestone 3 : Modify server to accept multiple connections (multi-threading)

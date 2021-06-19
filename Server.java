@@ -9,37 +9,32 @@ import java.util.HashMap;
 public class Server extends Thread{
     // TODO : Define all required varible
     private ItemMap item_map;
-    private String x= "x";
-
     private Socket s;
 
-    public Server(ItemMap item_map) {
+    public Server(ItemMap item_map , Socket s) {
+
         this.item_map = item_map;
+        this.s = s;
     }
+
     public void run(){
+        try {
+            handle();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
-    public void start() {
-                try
-                {
-                        ServerSocket ss = new ServerSocket(2021); //declare port number
-                        System.out.println("waiting for client to connect..........");
-
-                        Socket s = ss.accept(); //hold server socket till client request
-                        System.out.println("Connecting Established");
-                        Server server = new Server(item_map);
-                        server.handle(s);
-
-
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-        // Create a socket and accept connections
-    }
-    private void handle(Socket s) throws IOException{
+//    public void start() {
+//        // Create a socket and accept connections
+//        try {
+//            handle();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+    private void handle() throws IOException{
 
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
@@ -69,7 +64,7 @@ public class Server extends Thread{
             out.print("\nPlease Wait.......\n");
             out.flush();
             synchronized(item){
-                double currentPrice = item.get_price();
+                float currentPrice = item.get_price();
                 out.print("\nYes "+name+", The CURRENT PRICE of the security is : " + currentPrice + "\nPlease enter your price to bid : ");
                 out.flush();
                 String price="0";
@@ -79,7 +74,8 @@ public class Server extends Thread{
                     System.out.println(excessBytesDuringWait);
                 }
                 try{
-                    for(price = in.readLine(); !price.equals("quit") && Double.parseDouble(price) <= currentPrice ; price = in.readLine()){
+                    for(price = in.readLine(); !price.equals("quit") && Float.parseFloat(price) <= currentPrice ; price = in.readLine()){
+
                         out.print("\nError: Hi "+name+", The price you entered must be more than the current price of the security. Note that the current price of " +symbol+ " is "+currentPrice+"\nPlease re-enter your price to bid : ");
                         out.flush();
                     }
@@ -102,12 +98,13 @@ public class Server extends Thread{
                     out.print("\nError input: Hi "+name+", Enter 'confirm' and press enter to confirm bidding. Or enter 'quit' and press enter to quit bidding.\n");
                     out.flush();
                 }
+                item_map.get(symbol).setName(name);
+                item_map.get(symbol).make_bid(Float.parseFloat(price));
 
-//
-//                ItemMap item_map =new ItemMap();
-//                item.make_bid(Float.parseFloat(price));
 
-                out.print("\nCongratulations "+ name +",Your bid saved successfully. Thank you for using Stock Exchange - Auction Server.\n");
+
+
+                out.print("\nCongratulations "+ name +",Your bid saved successfully.\n Current Price in "+symbol+" is "+price+".\nThank You for using Stock Exchange Server.\n");
                 out.flush();
             }
             s.close();
