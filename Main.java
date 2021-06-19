@@ -24,11 +24,12 @@ public class Main {
                 // Milestone 2 : Create a server and accept 1 connection
                 Server server = new Server(item_map,socket);   // Server
                 server.start();       // Server starts running here.
+                server.sleep(500);
                 item_map.values().getClass().getName();
-                System.out.println("Client "+(x+1)+ " Connected");
+                System.out.println("Client "+(x+1)+ " Connected\n");
                 x++;
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
 

@@ -64,8 +64,8 @@ public class Server extends Thread{
             out.print("\nPlease Wait.......\n");
             out.flush();
             synchronized(item){
-                float currentPrice = item.get_price();
-                out.print("\nYes "+name+", The CURRENT PRICE of the security is : " + currentPrice + "\nPlease enter your price to bid : ");
+//                float currentPrice = item.get_price();
+                out.print("\nYes "+name+", The CURRENT PRICE of the security is : " + item.get_price() + "\nPlease enter your price to bid : ");
                 out.flush();
                 String price="0";
                 int excessBytesDuringWait = s.getInputStream().available();
@@ -74,9 +74,9 @@ public class Server extends Thread{
                     System.out.println(excessBytesDuringWait);
                 }
                 try{
-                    for(price = in.readLine(); !price.equals("quit") && Float.parseFloat(price) <= currentPrice ; price = in.readLine()){
+                    for(price = in.readLine(); !price.equals("quit") && Float.parseFloat(price) <= item.get_price() ; price = in.readLine()){
 
-                        out.print("\nError: Hi "+name+", The price you entered must be more than the current price of the security. Note that the current price of " +symbol+ " is "+currentPrice+"\nPlease re-enter your price to bid : ");
+                        out.print("\nError: Hi "+name+", The price you entered must be more than the current price of the security. Note that the current price of " +symbol+ " is "+item.get_price()+"\nPlease re-enter your price to bid : ");
                         out.flush();
                     }
                     if(price.equals("quit"))
@@ -100,6 +100,7 @@ public class Server extends Thread{
                 }
                 item_map.get(symbol).setName(name);
                 item_map.get(symbol).make_bid(Float.parseFloat(price));
+
 
 
 
