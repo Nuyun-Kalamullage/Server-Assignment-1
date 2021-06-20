@@ -19,8 +19,12 @@ public class Server extends Thread{
 
     public void run(){
         try {
+
             handle();
-        } catch (IOException e) {
+
+            s.close();
+
+        } catch (IOException  e) {
             e.printStackTrace();
         }
 
@@ -64,7 +68,7 @@ public class Server extends Thread{
             out.print("\nPlease Wait.......\n");
             out.flush();
             synchronized(item){
-//                float currentPrice = item.get_price();
+//              float currentPrice = item.get_price();
                 out.print("\nYes "+name+", The CURRENT PRICE of the security is : " + item.get_price() + "\nPlease enter your price to bid : ");
                 out.flush();
                 String price="0";
@@ -100,10 +104,6 @@ public class Server extends Thread{
                 }
                 item_map.get(symbol).setName(name);
                 item_map.get(symbol).make_bid(Float.parseFloat(price));
-
-
-
-
 
                 out.print("\nCongratulations "+ name +",Your bid saved successfully.\n Current Price in "+symbol+" is "+price+".\nThank You for using Stock Exchange Server.\n");
                 out.flush();
