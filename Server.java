@@ -30,14 +30,6 @@ public class Server extends Thread{
 
     }
 
-//    public void start() {
-//        // Create a socket and accept connections
-//        try {
-//            handle();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
     private void handle() throws IOException{
 
         try {
@@ -102,11 +94,24 @@ public class Server extends Thread{
                     out.print("\nError input: Hi "+name+", Enter 'confirm' and press enter to confirm bidding. Or enter 'quit' and press enter to quit bidding.\n");
                     out.flush();
                 }
-                item_map.get(symbol).setName(name);
-                item_map.get(symbol).make_bid(Float.parseFloat(price));
 
-                out.print("\nCongratulations "+ name +",Your bid saved successfully.\n Current Price in "+symbol+" is "+price+".\nThank You for using Stock Exchange Server.\n");
+                //item_map.get(symbol).make_bid(Float.parseFloat(price));
+                if(!item_map.get(symbol).timeOut){
+                    out.println(System.currentTimeMillis());
+                    item_map.get(symbol).set_Name(name);
+                    if (item_map.get(symbol).make_bid(Float.parseFloat(price))==0) {
+                        out.print("\nCongratulations "+ name +",Your bid saved successfully.\n Current Price in "+symbol+" is "+price+".\nThank You for using Stock Exchange Server.\n");
+                        //item_map.get(symbol).make_bid(Float.parseFloat(price));
+
+                    } else {
+                        out.print("\n"+name +",Your bid is expired.\n Due to TimeOut \nThank You for using Stock Exchange Server.\n");
+                    }
+                }else{
+                    out.print("\n"+name +",Your bid is expired.\n Due to TimeOut \nThank You for using Stock Exchange Server.\n");
+                }
                 out.flush();
+
+
             }
             s.close();
 

@@ -1,10 +1,30 @@
 
-public class Item {
+public class Item extends Thread{
     private String symbol;
     private float price;
     private int security;
     private float profit;
     private String name;
+    private boolean isMadeBid ;
+    private boolean alreadyTimeout;
+    boolean timeOut ;
+    long start = System.currentTimeMillis();
+    long end = start + 60_000;
+    long extendTime = System.currentTimeMillis() + 30_000;
+
+    public void run(){
+
+        while (end > System.currentTimeMillis()) {
+            if (end <= System.currentTimeMillis()){
+                System.out.println("Bidding Time is Over");
+                timeOut = true;
+                alreadyTimeout =true;
+                break;
+            }
+            timeOut = false;
+        }
+
+    }
 
     public Item(String symbol, String name, float price){
         this.symbol = symbol;
@@ -13,7 +33,8 @@ public class Item {
         this.profit = profit;
     }
 
-    public void setName(String name) {
+
+    public void set_Name(String name) {
         this.name = name;
     }
 
@@ -33,18 +54,47 @@ public class Item {
         this.price = price;
     }
 
-    public float make_bid(float new_price){
-    	// TODO: Implement this.
-        try{
-            if(get_price()< new_price){
-                update_price(new_price);
-                System.out.println(get_name()+" Make a bid in "+get_symbol()+" for $"+get_price()+". \n");
-                System.out.flush();
-            }
 
-        }catch(NumberFormatException e){
+    public float make_bid(float new_price) {
+        // TODO: Implement this.
+        int errorCode = 0;
+        try {
+            if (!isAlive()){
+                start();
+            }
+            if (!timeOut) {
+                if (end <= System.currentTimeMillis()) {
+                    System.out.println("Bidding Time is Over");
+                    timeOut = true;
+                    alreadyTimeout = true;
+                    errorCode = -2;
+
+                } else if (extendTime < System.currentTimeMillis() && get_price() < new_price) {
+                    isMadeBid = false;
+                    System.out.println("Time Extended for " + get_symbol() + " 1 Minute Additional\n");
+                    end = end + 1_000;
+                    System.out.println(get_name() + " Make a bid in " + get_symbol() + " for $" + new_price + ". \n");
+                    isMadeBid = true;
+                    update_price(new_price);
+                    errorCode = 0;
+
+                }else{
+                    if (get_price() < new_price) {
+                        System.out.println(get_name() + " Make a bid in " + get_symbol() + " for $" + new_price + ". \n");
+                        isMadeBid = true;
+                        update_price(new_price);
+                        errorCode = 0;
+                    }else
+                        errorCode = -2;
+                    timeOut = false;
+
+                }
+
+            }System.out.flush();
+
+        } catch (NumberFormatException e) {
         }
-        return get_price();
+        return errorCode;
     }
 
 }
