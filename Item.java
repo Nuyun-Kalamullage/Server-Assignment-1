@@ -63,7 +63,7 @@ public class Item extends Thread {
 
             if (!isAlive()) {
                 if (end <= System.currentTimeMillis()) {
-                    System.out.println("Bidding Time is Over");
+                    System.out.println("Bidding Time is Over for "+get_symbol()+" item.");
                     timeOut = true;
                     errorCode = -2;
 
