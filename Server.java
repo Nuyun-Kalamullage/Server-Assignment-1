@@ -36,9 +36,18 @@ public class Server extends Thread {
             out.println("Enter 'quit' and press enter any time to quit bidding.");
             out.print("Please Enter Your Name : ");
             out.flush();
-            String name = in.readLine();
-            if (name.equals("quit"))
-                s.close();
+            String name;
+
+            for (name = in.readLine(); Item.nameSet.contains(name) || name.equals("quit"); name = in.readLine()) {
+                if (name.equals("quit"))
+                    s.close();
+                out.println("Name is not Unique.Try again");
+                out.flush();
+            }
+            Item.nameSet.add(name);
+
+            //String name = in.readLine();
+
 
             out.print("\nOK " + name + ", Please Enter the symbol of the item you want to bid : ");
             out.flush();

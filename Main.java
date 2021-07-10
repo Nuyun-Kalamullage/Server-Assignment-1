@@ -12,29 +12,23 @@ public class Main {
         CSVReader csvreader = new CSVReader("stocks.csv", item_map);    // CSV reader
         csvreader.read();   //item_map gets populated with data
         Thread t1 = new Thread() {
-            boolean timeOut;
-            long end = System.currentTimeMillis() + (Integer.parseInt(args[0]) * 60_000);
-
+           long end = System.currentTimeMillis() + (Integer.parseInt(args[0]) * 60_000);
             public void run() {
 
-                while (!timeOut) {
-                    if (end <= System.currentTimeMillis()) {
-                        System.out.println("Bidding Time is Over for Not extended items ");
-                        break;
-                    }
+                while (end > System.currentTimeMillis()) {
+
                 }
+                System.out.println("Bidding Time is Over for Not extended items ");
             }
         };
         Item.setBiddingTime(Integer.parseInt(args[0]) * 60_000);
         t1.start();
-
         // Milestone 3 : Modify server to accept multiple connections (multi-threading)
-
         int x = 0;
         try {
             ServerSocket ss = new ServerSocket(2021);
             while (true) {
-                System.out.println("Waiting for clients....");
+                System.out.println("Waiting for clients....\n");
                 Socket socket = ss.accept(); // if error must close the socket
                 System.out.flush();
                 // Milestone 2 : Create a server and accept 1 connection

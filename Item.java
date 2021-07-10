@@ -1,3 +1,4 @@
+import java.util.HashSet;
 
 public class Item extends Thread {
     private String symbol;
@@ -5,6 +6,7 @@ public class Item extends Thread {
     private int security;
     private float profit;
     private String name;
+    public static HashSet<String> nameSet = new HashSet<>();
     private boolean isMadeBid;
     boolean timeOut;
     private static long biddingTime;
@@ -30,6 +32,8 @@ public class Item extends Thread {
         this.security = security;
         this.profit = profit;
     }
+
+
 
     public static void setBiddingTime(long biddingTime) {
         Item.biddingTime = biddingTime;
@@ -93,6 +97,7 @@ public class Item extends Thread {
             System.out.flush();
 
         } catch (NumberFormatException e) {
+            System.err.println("Invalid Number Format");
         }
         return errorCode;
     }
