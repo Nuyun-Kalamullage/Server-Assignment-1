@@ -1,10 +1,15 @@
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.NumberFormat;
 
 public class Main {
+    public static String a;
 
     public static void main(String[] args) {
+        int givenTime = Integer.parseInt(args[0]) * 60_000;
 
         // Milestone 1 : Create the CSV reader and populate data structure
 
@@ -12,13 +17,26 @@ public class Main {
         CSVReader csvreader = new CSVReader("stocks.csv", item_map);    // CSV reader
         csvreader.read();   //item_map gets populated with data
         Thread t1 = new Thread() {
-           long end = System.currentTimeMillis() + (Integer.parseInt(args[0]) * 60_000);
+           long end = System.currentTimeMillis() + givenTime;
             public void run() {
 
-                while (end > System.currentTimeMillis()) {
+                try {
+                    while (end > System.currentTimeMillis()) {
+                        String str = Long.toString(end - System.currentTimeMillis()).substring(0, Long.toString(end - System.currentTimeMillis()).length()-3);
+                        int second = Integer.parseInt(str);
+                        int h = second / 3600;
+                        int m = second / 60;
+                        int s = second % 60;
+                        System.out.print(("Remaining Time to BID is "+h+":"+m+":"+s+"\r"));
+                        a="Remaining BID-Time for not extended items "+h+":"+m+":"+s;
 
+                        sleep(1000);
+                    }
+                    System.out.print("\r");
+                    System.out.println("Bidding Time is Over for Not extended items ");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                System.out.println("Bidding Time is Over for Not extended items ");
             }
         };
         Item.setBiddingTime(Integer.parseInt(args[0]) * 60_000);
@@ -34,6 +52,7 @@ public class Main {
                 // Milestone 2 : Create a server and accept 1 connection
                 Server server = new Server(item_map, socket);   // Server
                 server.start();    // Server starts running here.
+
 
                 if (!ss.isBound() && ss.isClosed()) {
                     break;

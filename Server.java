@@ -15,6 +15,7 @@ public class Server extends Thread {
     public void run() {
         try {
 
+
             handle();
 
             s.close();
@@ -34,6 +35,8 @@ public class Server extends Thread {
             out.println("===========  Welcome to Stock Exchange - Auction Server ==========");
             out.println("==================================================================\n");
             out.println("Enter 'quit' and press enter any time to quit bidding.");
+            out.println(Main.a+"\r");
+
             out.print("Please Enter Your Name : ");
             out.flush();
             String name;
@@ -45,9 +48,6 @@ public class Server extends Thread {
                 out.flush();
             }
             Item.nameSet.add(name);
-
-            //String name = in.readLine();
-
 
             out.print("\nOK " + name + ", Please Enter the symbol of the item you want to bid : ");
             out.flush();
@@ -64,7 +64,7 @@ public class Server extends Thread {
             out.println("\nPlease Wait.......");
             out.flush();
             synchronized (item) {
-//              float currentPrice = item.get_price();
+
                 out.println("\nYes " + name + ", The CURRENT PRICE of the"+ symbol +" item is : " + item.get_price());
                 out.print("\nPlease enter your price to bid : ");
                 out.flush();
@@ -102,12 +102,12 @@ public class Server extends Thread {
                     out.flush();
                 }
 
-                //item_map.get(symbol).make_bid(Float.parseFloat(price));
                 if (!item_map.get(symbol).timeOut) {
                     item_map.get(symbol).set_Name(name);
                     if (item_map.get(symbol).make_bid(Float.parseFloat(price)) == 0) {
                         out.println("\nCongratulations " + name + ", Your bid saved successfully.");
                         out.println("Current Price in " + symbol + " is " + price + ".");
+                        sleep(5500);
                     } else {
                         out.println(name + ",Your bid is expired. Due to TimeOut ");
                     }
@@ -118,7 +118,7 @@ public class Server extends Thread {
                 out.flush();
             }
             s.close();
-        } catch (IOException iOException) {
+        } catch (IOException | InterruptedException iOException) {
             this.s.close();
         }
     }

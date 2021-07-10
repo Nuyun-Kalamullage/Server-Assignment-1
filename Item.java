@@ -7,12 +7,12 @@ public class Item extends Thread {
     private float profit;
     private String name;
     public static HashSet<String> nameSet = new HashSet<>();
-    private boolean isMadeBid;
     boolean timeOut;
     private static long biddingTime;
+
     long start = System.currentTimeMillis();
-    long end = start + 60_000;
-    long extendTime = System.currentTimeMillis() + 30_000;
+    long end = start + biddingTime;
+    long extendTime = end - 60_000;
 
     public void run() {
 
@@ -72,11 +72,11 @@ public class Item extends Thread {
                     errorCode = -2;
 
                 } else if (extendTime < System.currentTimeMillis() && get_price() < new_price) {
-                    isMadeBid = false;
+
                     System.out.println("Time Extended for " + get_symbol() + " 1 Minute Additional\n");
-                    end = end + 10_000;
+                    end = end + 60_000;
                     System.out.println(get_name() + " Make a bid in " + get_symbol() + " for $" + new_price + ". \n");
-                    isMadeBid = true;
+
                     update_price(new_price);
                     start();
                     errorCode = 0;
@@ -84,7 +84,7 @@ public class Item extends Thread {
                 } else {
                     if (get_price() < new_price) {
                         System.out.println(get_name() + " Make a bid in " + get_symbol() + " for $" + new_price + ". \n");
-                        isMadeBid = true;
+
                         update_price(new_price);
                         errorCode = 0;
                     } else
