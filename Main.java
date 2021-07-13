@@ -34,7 +34,7 @@ public class Main {
                         try {
                             String str = Long.toString(end - System.currentTimeMillis()).substring(0, Long.toString(end - System.currentTimeMillis()).length()-3);
                             second = Integer.parseInt(str);
-                        } catch (NumberFormatException e) {
+                        } catch (Exception e) {
                             second =0;
                         }
                         int h = second / 3600;
@@ -84,7 +84,6 @@ public class Main {
             }
         };
         t2.start();
-
 
         // Milestone 3 : Modify server to accept multiple connections (multi-threading)
         int x = 0;

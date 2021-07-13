@@ -28,7 +28,7 @@ public class CSVReader {
                 tokens = line.split(",");
 
 
-                Item item = new Item(tokens[0], "", Float.parseFloat(tokens[1]));
+                Item item = new Item(tokens[0], "", Float.parseFloat(tokens[1]), Integer.parseInt(tokens[2]), Float.parseFloat(tokens[3]));
                 //System.out.println("item = " + item.get_price());
                 item_map.put(tokens[0], item);
                 //System.out.println( item_map.get(tokens[0]).make_bid(5.5F));

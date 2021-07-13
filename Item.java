@@ -25,7 +25,7 @@ public class Item extends Thread {
         }
     }
 
-    public Item(String symbol, String name, float price) {
+    public Item(String symbol, String name, float price, int security, float profit) {
         this.symbol = symbol;
         this.price = price;
         this.security = security;
@@ -33,6 +33,17 @@ public class Item extends Thread {
     }
 
 
+    public float getProfit() {
+        return profit;
+    }
+
+    public void setProfit(float profit) {
+        this.profit = profit;
+    }
+
+    public int getSecurity() {
+        return security;
+    }
 
     public static void setBiddingTime(long biddingTime) {
         Item.biddingTime = biddingTime;
@@ -86,15 +97,13 @@ public class Item extends Thread {
                 } else {
                     if (get_price() < new_price) {
                         System.out.println(get_name() + " Make a bid in " + get_symbol() + " for $" + new_price + ". \n");
-
                         update_price(new_price);
+
                         errorCode = 0;
                     } else
                         errorCode = -2;
                     timeOut = false;
-
                 }
-
             }
             System.out.flush();
 
