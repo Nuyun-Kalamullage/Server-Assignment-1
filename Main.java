@@ -52,8 +52,40 @@ public class Main {
                 }
             }
         };
-
         t1.start();
+
+
+        Thread t2 = new Thread() {
+
+            public void run() {
+                int y = 0;
+                try {
+                    ServerSocket ps = new ServerSocket(2022);
+                    while (true) {
+                        System.out.println("Waiting for Pub & Sub....\n");
+                        Socket socket = ps.accept(); // if error must close the socket
+                        System.out.flush();
+                        // Milestone 2 : Create a server and accept 1 connection
+                        Server server = new Server(item_map, socket);   // Server
+                        server.start();    // Server starts running here.
+
+
+                        if (!ps.isBound() && ps.isClosed()) {
+                            break;
+                        }
+                        item_map.values().getClass().getName();
+                        System.out.println("Pub-Sub " + (y + 1) + " Connected\n");
+                        y++;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+
+                }
+            }
+        };
+        t2.start();
+
+
         // Milestone 3 : Modify server to accept multiple connections (multi-threading)
         int x = 0;
         try {
@@ -78,6 +110,8 @@ public class Main {
             e.printStackTrace();
 
         }
+
+
 
 
 
