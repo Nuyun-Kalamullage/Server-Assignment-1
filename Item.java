@@ -9,7 +9,6 @@ public class Item extends Thread {
     public static HashSet<String> nameSet = new HashSet<>();
     boolean timeOut;
     private static long biddingTime;
-
     long start = System.currentTimeMillis();
     long end = start + biddingTime;
     long extendTime = end - 60_000;
@@ -67,6 +66,8 @@ public class Item extends Thread {
 
             if (!isAlive()) {
                 if (end <= System.currentTimeMillis()) {
+                    System.out.println(start);
+                    System.out.println(end);
                     System.out.println("Bidding Time is Over for "+get_symbol()+" item.");
                     timeOut = true;
                     errorCode = -2;

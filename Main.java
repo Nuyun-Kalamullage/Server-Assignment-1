@@ -9,7 +9,14 @@ public class Main {
     public static String a;
 
     public static void main(String[] args) {
-        int givenTime = Integer.parseInt(args[0]) * 60_000;
+
+        final int[] givenTime = new int[2];
+        try {
+            givenTime[1] = Integer.parseInt(args[0]) * 60_000;
+            Item.setBiddingTime(Integer.parseInt(args[0]) * 60_000);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
 
         // Milestone 1 : Create the CSV reader and populate data structure
 
@@ -17,13 +24,19 @@ public class Main {
         CSVReader csvreader = new CSVReader("stocks.csv", item_map);    // CSV reader
         csvreader.read();   //item_map gets populated with data
         Thread t1 = new Thread() {
-           long end = System.currentTimeMillis() + givenTime;
+
             public void run() {
+                long end = System.currentTimeMillis() + givenTime[1];
 
                 try {
                     while (end > System.currentTimeMillis()) {
-                        String str = Long.toString(end - System.currentTimeMillis()).substring(0, Long.toString(end - System.currentTimeMillis()).length()-3);
-                        int second = Integer.parseInt(str);
+                        int second = 0;
+                        try {
+                            String str = Long.toString(end - System.currentTimeMillis()).substring(0, Long.toString(end - System.currentTimeMillis()).length()-3);
+                            second = Integer.parseInt(str);
+                        } catch (NumberFormatException e) {
+                            second =0;
+                        }
                         int h = second / 3600;
                         int m = second / 60;
                         int s = second % 60;
@@ -39,7 +52,7 @@ public class Main {
                 }
             }
         };
-        Item.setBiddingTime(Integer.parseInt(args[0]) * 60_000);
+
         t1.start();
         // Milestone 3 : Modify server to accept multiple connections (multi-threading)
         int x = 0;
