@@ -73,7 +73,7 @@ public class Item extends Thread {
                 } else if (extendTime < System.currentTimeMillis() && get_price() < new_price) {
 
                     System.out.println("Time Extended for " + get_symbol() + " 1 Minute Additional\n");
-                    end = end + 120_000;
+                    end = end + 60_000;
                     System.out.println(get_name() + " Make a bid in " + get_symbol() + " for $" + new_price + ". \n");
 
                     update_price(new_price);

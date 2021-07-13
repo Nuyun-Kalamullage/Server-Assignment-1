@@ -10,13 +10,23 @@ public class Main {
 
     public static void main(String[] args) {
 
-        final int[] givenTime = new int[2];
+        final long[] givenTime = new long[2];
         try {
-            givenTime[1] = Integer.parseInt(args[0]) * 60_000;
-            Item.setBiddingTime(Integer.parseInt(args[0]) * 60_000);
-        } catch (NumberFormatException e) {
+
+            givenTime[1] = Long.parseLong(args[0]) * 60_000;
+            Item.setBiddingTime(Long.parseLong(args[0]) * 60_000);
+            if(givenTime[1]<59000){
+                System.err.println("Enter Valid Input Argument Before Start the sever");
+                System.exit(0);
+            }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                System.err.println("Enter Valid numbers in minutes");
+            } catch (ArrayIndexOutOfBoundsException e) {
+            System.err.println("Enter the Input Argument Before Start");
             e.printStackTrace();
         }
+
 
         // Milestone 1 : Create the CSV reader and populate data structure
 

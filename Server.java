@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.Socket;
 
+import static java.lang.System.err;
+
 public class Server extends Thread {
     // TODO : Define all required varible
     private ItemMap item_map;
@@ -87,9 +89,10 @@ public class Server extends Thread {
                         if (price.equals("quit"))
                             s.close();
                     } catch (NumberFormatException e) {
-                        out.println("\nError You entered an invalid value for price. Exiting the Auction server ....Try again");
+                        out.println("\nError You entered an invalid value for price. Bidding Cancel. Try again.");
                         out.flush();
-                        s.close();
+                        continue;
+                        //s.close();
                     }
 
 
