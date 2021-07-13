@@ -61,13 +61,11 @@ public class Item extends Thread {
 
     public float make_bid(float new_price) {
         // TODO: Implement this.
-        int errorCode = 0;
+        int errorCode= -2;
         try {
 
-            if (!isAlive()) {
+            if (!timeOut) {
                 if (end <= System.currentTimeMillis()) {
-                    System.out.println(start);
-                    System.out.println(end);
                     System.out.println("Bidding Time is Over for "+get_symbol()+" item.");
                     timeOut = true;
                     errorCode = -2;
@@ -75,12 +73,15 @@ public class Item extends Thread {
                 } else if (extendTime < System.currentTimeMillis() && get_price() < new_price) {
 
                     System.out.println("Time Extended for " + get_symbol() + " 1 Minute Additional\n");
-                    end = end + 60_000;
+                    end = end + 120_000;
                     System.out.println(get_name() + " Make a bid in " + get_symbol() + " for $" + new_price + ". \n");
 
                     update_price(new_price);
-                    start();
+                    if(!isAlive()) {
+                        start();
+                    }
                     errorCode = 0;
+                    timeOut =false;
 
                 } else {
                     if (get_price() < new_price) {

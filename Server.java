@@ -48,9 +48,9 @@ public class Server extends Thread {
                 Item.nameSet.add(name);
             while(s.isConnected()) {
                 if(Main.a.matches("Remaining BID-Time for not extended items 0:0:0")){
-                    out.println("Remaining BID-Time for not extended items is Over");
+                    out.println("\nRemaining BID-Time for not extended items is Over");
                 }else {
-                    out.println(Main.a + "\r");
+                    out.println("\n"+Main.a + "\r");
                 }
                 out.print("\nOK " + name + ", Please Enter the symbol of the item you want to bid : ");
                 out.flush();
@@ -68,7 +68,7 @@ public class Server extends Thread {
                 out.flush();
                 synchronized (item) {
 
-                    out.println("\nYes " + name + ", The CURRENT PRICE of the" + symbol + " item is : " + item.get_price());
+                    out.println("\nYes " + name + ", The CURRENT PRICE of the " + symbol + " item is : " + item.get_price());
                     out.print("\nPlease enter your price to bid : ");
                     out.flush();
                     String price = "0";
@@ -110,6 +110,7 @@ public class Server extends Thread {
                         if (item_map.get(symbol).make_bid(Float.parseFloat(price)) == 0) {
                             out.println("\nCongratulations " + name + ", Your bid saved successfully.");
                             out.println("Current Price in " + symbol + " is " + price + ".");
+                            item_map.get(symbol).make_bid(Float.parseFloat(price));
                             sleep(500);
                         } else {
                             out.println(name + ",Your bid is expired. Due to TimeOut ");
