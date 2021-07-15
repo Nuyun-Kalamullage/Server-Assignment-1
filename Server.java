@@ -1,6 +1,6 @@
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Server extends Thread {
     private ItemMap item_map;
@@ -155,9 +155,48 @@ public class Server extends Thread {
             Item.nameSet.add(name);
             //out.flush();
 
+            ArrayList<String> subscribeMap = new ArrayList();
+            Thread profitT = new Thread() {
+                public void run() {
+                    try {
+                        //out.print("thread Started");
+                        out.flush();
+
+                        while (true) {
+
+                            if (!ItemMap.profitList.isEmpty()) {
+                                if (subscribeMap.contains(ItemMap.profitList.get(ItemMap.profitList.size() - 1)) && !ItemMap.profitList.isEmpty()) {
+                                    if (!ItemMap.profitList.isEmpty()) {
+                                        out.flush();
+                                        out.print("\ritem " + ItemMap.profitList.get(ItemMap.profitList.size() - 1) + " Profit Changed to \t:\t " + item_map.get(ItemMap.profitList.get(ItemMap.profitList.size() - 1)).getProfit() + "\n");
+                                        out.flush();
+                                    }
+                                    if (!ItemMap.profitList.isEmpty())
+                                        ItemMap.profitList.remove((ItemMap.profitList.size() - 1));
+                                    sleep(3000);
+
+                                } else if (!ItemMap.profitList.isEmpty() && !subscribeMap.contains(ItemMap.profitList.get(ItemMap.profitList.size() - 1))) {
+                                    ItemMap.profitList.remove((ItemMap.profitList.size() - 1));
+
+                                }
+                            }else
+                                out.print("");
+                            out.flush();
+
+
+                        }
+
+                    } catch (Exception e) {
+
+                    }
+
+                }
+            };
+
             while (s.isConnected()) {
-                if (Main.a.matches("Remaining BID-Time for not extended items 0:0:0")) {
-                    out.println("\nRemaining BID-Time for not extended items is Over");
+                if(Main.a.matches("Remaining BID-Time for not extended items 0:0:0")) {
+                    out.flush();
+                    out.println("\n\rRemaining BID-Time for not extended items is Over");
                     out.flush();
                 } else {
                     out.println("\n" + Main.a + "\r");
@@ -166,58 +205,66 @@ public class Server extends Thread {
 
                 String[] queryTokens;
                 String query;
-                out.print("\nEnter the Query Format :");
                 out.flush();
-                for (query = in.readLine(); query.equals("quit"); query = in.readLine()){
+                out.println("\n\rEnter the Query Format :");
+                out.flush();
+                for (query = in.readLine(); query.equals("quit"); query = in.readLine()) {
                     out.println("quit");
                     out.flush();
                 }
                 queryTokens = query.split(" ");
 
+                if (item_map.containsKey(queryTokens[0]) && !item_map.containsKey(queryTokens[1])) {
+
+                    String sym = queryTokens[0];
+                    String securityNumber = queryTokens[1];
+                    String profit = queryTokens[2];
+
+                    if (item_map.get(sym).getSecurity() == Integer.parseInt(securityNumber)) {
+                        item_map.get(sym).setProfit(Float.parseFloat(profit));
+                        out.print("0 |");
+                        out.print(" Profit Changed");
+                        System.out.println(name+", Change the Profit in item "+sym+" to : "+profit);
+                        ItemMap.profitMap.put(sym,item_map.get(sym).getProfit());
+                        ItemMap.profitList.add(sym);
 
 
+                    } else {
+                        out.print("-1");
+                    }
 
-                    if(item_map.containsKey(queryTokens[0]) && queryTokens[1].equals(""+item_map.get(queryTokens[0]).getSecurity())) {
-                        String sym = queryTokens[0];
-                        String securityNumber = queryTokens[1];
-                        String profit = queryTokens[2];
+                } else if (queryTokens[0].equals("PRFT")) {
 
-                        if(item_map.get(sym).getSecurity() == Integer.parseInt(securityNumber)){
-                            item_map.get(sym).setProfit(Float.parseFloat(profit));
-                            out.print("0 |");
-                            out.print(" Profit Changed");
+                    for (int i = 1; i < queryTokens.length; i++) {
+                        if ((item_map.containsKey(queryTokens[i]))) {
+                            if(!subscribeMap.contains(queryTokens[i])) {
+                                subscribeMap.add(queryTokens[i]);
+                            }
+                            System.out.println(name+", Subscribe to the "+queryTokens[i]+" item.");
+                            out.print("0 ");
+                            if(!profitT.isAlive()){
+                            profitT.start();
+                            }
 
-
-                        }else{
+                        } else {
                             out.print("-1");
                         }
-
-                    }else if (queryTokens[0].equals("PRFT")){
-                        String[] profitArray = new String[queryTokens.length];
-                        for(int i=1;i< queryTokens.length ;i++) {
-                            if ((item_map.containsKey(queryTokens[i]))){
-                                profitArray[i] = queryTokens[i];
-                                out.print("0 ");
-                            }
-                            else {
-                                out.print("-1");
-                            }
-                        }
-
-                    }else if ( queryTokens[0].equals("BID")){
-                        String[] subscriptionArray = new String[queryTokens.length];
-                        for(int i=1;i< queryTokens.length ;i++){
-                            subscriptionArray[i] = queryTokens[i];
-                        }
-                    }else{
-                        if(queryTokens[0].toLowerCase().equals("quit")) {
-                            s.close();
-                            break;
-                        }
-
                     }
-                    out.println("\niwarai....");
 
+                } else if (queryTokens[0].equals("BID")) {
+                    String[] subscriptionArray = new String[queryTokens.length];
+                    for (int i = 1; i < queryTokens.length; i++) {
+                        subscriptionArray[i] = queryTokens[i];
+                    }
+                } else {
+                    if (queryTokens[0].toLowerCase().equals("quit")) {
+                        s.close();
+                        break;
+                    }
+
+                }
+                out.flush();
+                out.println("\r\n==================================================================\n");
             }
         } catch (IOException iOException) {
 

@@ -40,7 +40,7 @@ public class Main {
                         int h = second / 3600;
                         int m = second / 60;
                         int s = second % 60;
-                        System.out.print(("Remaining Time to BID is "+h+":"+m+":"+s+"\r"));
+                        System.out.print("Remaining Time to BID is "+h+":"+m+":"+s+"\r");
                         a="Remaining BID-Time for not extended items "+h+":"+m+":"+s;
 
                         sleep(1000);
