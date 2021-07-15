@@ -7,5 +7,7 @@ public class ItemMap extends HashMap<String, Item> {
     // TODO : Implement any methods required to query/update the data structure.
     static HashMap<String, Float> profitMap = new HashMap<>();
     static ArrayList<String> profitList = new ArrayList<>();
+    static ArrayList<String> bidList = new ArrayList<>();
+
 
 }

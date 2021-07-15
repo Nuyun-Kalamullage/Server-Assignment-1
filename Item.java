@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class Item extends Thread {
@@ -92,6 +90,7 @@ public class Item extends Thread {
                     System.out.println(get_name() + " Make a bid in " + get_symbol() + " for $" + new_price + ". \n");
 
                     update_price(new_price);
+                    ItemMap.bidList.add(symbol);
                     if(!isAlive()) {
                         start();
                     }
@@ -102,6 +101,7 @@ public class Item extends Thread {
                     if (get_price() < new_price) {
                         System.out.println(get_name() + " Make a bid in " + get_symbol() + " for $" + new_price + ". \n");
                         update_price(new_price);
+                        ItemMap.bidList.add(symbol);
 
                         errorCode = 0;
                     } else

@@ -21,8 +21,9 @@ public class Server extends Thread {
                 s.close();
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("heey yaluwe api awa");
         }
     }
 
@@ -34,6 +35,7 @@ public class Server extends Thread {
             PrintWriter out = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
             out.println("==================================================================");
             out.println("===========  Welcome to Stock Exchange - Auction Server ==========");
+            out.println("====================== Client-Sever Model ========================");
             out.println("==================================================================\n");
             out.println("Enter 'quit' and press enter any time to quit bidding.");
             out.print("Please Enter Your Name ID : ");
@@ -131,7 +133,7 @@ public class Server extends Thread {
         }
     }
 
-    private void handle_1() throws IOException {// Implement methods for Pub-Sub Sever
+    private void handle_1() {// Implement methods for Pub-Sub Sever
 
         try {
 
@@ -139,29 +141,33 @@ public class Server extends Thread {
             PrintWriter out = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
             out.println("==================================================================");
             out.println("===========  Welcome to Stock Exchange - Auction Server ==========");
-            out.println("==================================================================\n");
+            out.println("================== Publisher-Subscriber Model ====================");
+            out.println("==================================================================");
+
             out.println("Enter 'quit' and press enter any time to quit bidding.");
             out.print("Please Enter Your Name ID : ");
             out.flush();
             String name;
 
             //problem here...
-            for (name = in.readLine(); Item.nameSet.contains(name) || name.equals("quit"); name = in.readLine()) {
-                if (name.equals("quit"))
+            for (name = in.readLine(); Item.nameSet.contains(name) || name.toLowerCase().equals("quit"); name = in.readLine()) {
+                if (name.toLowerCase().equals("quit")) {
+                    out.println("Exiting the Auction Sever ......");
+                    out.println("Thank you....");
+                    out.flush();
                     s.close();
+                }
                 out.println("Name ID is not Unique. Please Try again");
                 out.flush();
             }
             Item.nameSet.add(name);
-            //out.flush();
 
             ArrayList<String> subscribeMap = new ArrayList();
+            ArrayList<String> subscriptionArray = new ArrayList<>();
             Thread profitT = new Thread() {
                 public void run() {
                     try {
-                        //out.print("thread Started");
                         out.flush();
-
                         while (true) {
 
                             if (!ItemMap.profitList.isEmpty()) {
@@ -173,17 +179,14 @@ public class Server extends Thread {
                                     }
                                     if (!ItemMap.profitList.isEmpty())
                                         ItemMap.profitList.remove((ItemMap.profitList.size() - 1));
-                                    sleep(3000);
+                                    sleep(1000);
 
                                 } else if (!ItemMap.profitList.isEmpty() && !subscribeMap.contains(ItemMap.profitList.get(ItemMap.profitList.size() - 1))) {
                                     ItemMap.profitList.remove((ItemMap.profitList.size() - 1));
-
                                 }
-                            }else
+                            } else
                                 out.print("");
                             out.flush();
-
-
                         }
 
                     } catch (Exception e) {
@@ -193,13 +196,47 @@ public class Server extends Thread {
                 }
             };
 
+
+            Thread bidT = new Thread() {
+                public void run() {
+                    try {
+                        out.flush();
+                        while (true) {
+
+                            if (!ItemMap.bidList.isEmpty()) {
+                                if (subscriptionArray.contains(ItemMap.bidList.get(ItemMap.bidList.size() - 1)) && !ItemMap.bidList.isEmpty()) {
+                                    if (!ItemMap.bidList.isEmpty()) {
+                                        out.flush();
+                                        out.print("\ritem " + ItemMap.bidList.get(ItemMap.bidList.size() - 1) + " BID Changed to \t:\t " + item_map.get(ItemMap.bidList.get(ItemMap.bidList.size() - 1)).get_price() + "\n");
+                                        out.flush();
+                                    }
+                                    if (!ItemMap.bidList.isEmpty())
+                                        ItemMap.bidList.remove((ItemMap.bidList.size() - 1));
+                                    sleep(1000);
+
+                                } else if (!ItemMap.bidList.isEmpty() && !subscriptionArray.contains(ItemMap.bidList.get(ItemMap.bidList.size() - 1))) {
+                                    ItemMap.bidList.remove((ItemMap.bidList.size() - 1));
+                                }
+                            } else
+                                out.print("");
+                            out.flush();
+                        }
+
+                    } catch (Exception e) {
+
+                    }
+
+                }
+            };
+
+
             while (s.isConnected()) {
-                if(Main.a.matches("Remaining BID-Time for not extended items 0:0:0")) {
-                    out.flush();
-                    out.println("\n\rRemaining BID-Time for not extended items is Over");
+                out.flush();
+                if (Main.a.matches("Remaining BID-Time for not extended items 0:0:0")) {
+                    out.print("\n\rRemaining BID-Time for not extended items is Over");
                     out.flush();
                 } else {
-                    out.println("\n" + Main.a + "\r");
+                    out.print("\n\r" + Main.a + "");
                     out.flush();
                 }
 
@@ -208,67 +245,98 @@ public class Server extends Thread {
                 out.flush();
                 out.println("\n\rEnter the Query Format :");
                 out.flush();
-                for (query = in.readLine(); query.equals("quit"); query = in.readLine()) {
-                    out.println("quit");
+                for (query = in.readLine().toUpperCase(); query.equals("QUIT"); query = in.readLine().toUpperCase()) {
+                    out.println("Exiting the Auction Sever ......");
+                    out.println("Thank you....");
                     out.flush();
+                    s.close();
                 }
                 queryTokens = query.split(" ");
 
                 if (item_map.containsKey(queryTokens[0]) && !item_map.containsKey(queryTokens[1])) {
 
                     String sym = queryTokens[0];
-                    String securityNumber = queryTokens[1];
-                    String profit = queryTokens[2];
+                    int securityNumber = 0;
+                    float profit = 0;
+                    try {
+                        securityNumber = Integer.parseInt(queryTokens[1]);
+                        profit = Float.parseFloat(queryTokens[2]);
+                    } catch (Exception e) {
+                        out.print("\rEntered Number format is invalid!!");
+                        out.flush();
+                    }
 
-                    if (item_map.get(sym).getSecurity() == Integer.parseInt(securityNumber)) {
-                        item_map.get(sym).setProfit(Float.parseFloat(profit));
+                    if (item_map.get(sym).getSecurity() == securityNumber) {
+                        item_map.get(sym).setProfit(profit);
                         out.print("0 |");
                         out.print(" Profit Changed");
-                        System.out.println(name+", Change the Profit in item "+sym+" to : "+profit);
-                        ItemMap.profitMap.put(sym,item_map.get(sym).getProfit());
+                        System.out.println(name + ", Change the Profit in item " + sym + " to : " + profit);
+                        ItemMap.profitMap.put(sym, item_map.get(sym).getProfit());
                         ItemMap.profitList.add(sym);
-
-
                     } else {
-                        out.print("-1");
+                        out.print("| -1");
                     }
 
                 } else if (queryTokens[0].equals("PRFT")) {
 
                     for (int i = 1; i < queryTokens.length; i++) {
                         if ((item_map.containsKey(queryTokens[i]))) {
-                            if(!subscribeMap.contains(queryTokens[i])) {
+                            if (!subscribeMap.contains(queryTokens[i])) {
                                 subscribeMap.add(queryTokens[i]);
                             }
-                            System.out.println(name+", Subscribe to the "+queryTokens[i]+" item.");
+                            System.out.println(name + ", Subscribe to the Profit on " + queryTokens[i] + " item.");
                             out.print("0 ");
-                            if(!profitT.isAlive()){
-                            profitT.start();
+                            if (!profitT.isAlive()) {
+                                profitT.start();
                             }
-
                         } else {
                             out.print("-1");
                         }
                     }
 
                 } else if (queryTokens[0].equals("BID")) {
-                    String[] subscriptionArray = new String[queryTokens.length];
+
                     for (int i = 1; i < queryTokens.length; i++) {
-                        subscriptionArray[i] = queryTokens[i];
+
+                        if ((item_map.containsKey(queryTokens[i]))) {
+                            if (!subscriptionArray.contains(queryTokens[i])) {
+                                subscriptionArray.add(queryTokens[i]);
+                            }
+                            System.out.println(name + ", Subscribe to the BID on " + queryTokens[i] + " item.");
+                            out.print("0 ");
+                            if (!bidT.isAlive()) {
+                                bidT.start();
+                            }
+                        } else {
+                            out.print("-1");
+                        }
+
                     }
                 } else {
-                    if (queryTokens[0].toLowerCase().equals("quit")) {
+                    if (queryTokens[0].equals("QUIT")) {
+                        out.println("Exiting the Auction Sever ......");
+                        out.println("Thank you....");
+                        out.flush();
                         s.close();
                         break;
                     }
+                    out.print("\nSorry!!, Couldn't Catch that...");
+                    out.print("| -1");
+                    out.print("\n\rTry Again!!\n\n");
+                    out.flush();
 
                 }
                 out.flush();
-                out.println("\r\n==================================================================\n");
+                out.println("\r\n==================================================================");
             }
         } catch (IOException iOException) {
 
-            this.s.close();
+            try {
+                this.s.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                //System.out.println("Trows Exception Dapiya ");
+            }
         }
     }
 }
