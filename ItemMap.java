@@ -8,6 +8,4 @@ public class ItemMap extends HashMap<String, Item> {
     static HashMap<String, Float> profitMap = new HashMap<>();
     static ArrayList<String> profitList = new ArrayList<>();
     static ArrayList<String> bidList = new ArrayList<>();
-
-
 }

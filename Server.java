@@ -22,8 +22,7 @@ public class Server extends Thread {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("heey yaluwe api awa");
+            // System.out.println("heey yaluwe api awa");
         }
     }
 
@@ -264,6 +263,7 @@ public class Server extends Thread {
                     } catch (Exception e) {
                         out.print("\rEntered Number format is invalid!!");
                         out.flush();
+
                     }
 
                     if (item_map.get(sym).getSecurity() == securityNumber) {
@@ -274,7 +274,7 @@ public class Server extends Thread {
                         ItemMap.profitMap.put(sym, item_map.get(sym).getProfit());
                         ItemMap.profitList.add(sym);
                     } else {
-                        out.print("| -1");
+                        out.print(" | -1");
                     }
 
                 } else if (queryTokens[0].equals("PRFT")) {
