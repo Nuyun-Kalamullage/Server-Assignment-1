@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Server extends Thread {
     private ItemMap item_map;
@@ -22,7 +23,8 @@ public class Server extends Thread {
             }
 
         } catch (Exception e) {
-            // System.out.println("heey yaluwe api awa");
+           e.printStackTrace();
+
         }
     }
 
@@ -55,23 +57,44 @@ public class Server extends Thread {
                 } else {
                     out.println("\n" + Main.a + "\r");
                 }
-                out.print("\nOK " + name + ", Please Enter the symbol of the item you want to bid : ");
+                out.print("\nOK " + name + ", Please Enter the symbol of the item that you want to bid : ");
                 out.flush();
 
                 String symbol;
-                for (symbol = in.readLine(); !item_map.containsKey(symbol); symbol = in.readLine()) {
-                    if (symbol.equals("quit"))
-                        s.close();
-                    out.println("-1 , Symbol is invalid.Try again");
-                    out.flush();
-                }
+                    for (symbol = in.readLine().toUpperCase();  ; symbol = in.readLine().toUpperCase()) {
+                        if (symbol.equalsIgnoreCase("quit"))
+                            s.close();
+                        else if(!item_map.containsKey(symbol)) {
+                            out.println("-1 , Symbol is invalid.Try again");
+                            out.flush();
+                        }else {
+                            out.println("\nYes " + name + ", The CURRENT PRICE of the " + symbol + " item is : " + item_map.get(symbol).get_price()+"\n");
+                            out.println(name + ", Do you want to Bid on this item ? (Type with \"yes\" or \"no\")");
+                            out.flush();
+                            String exist;
+                            for (exist = in.readLine(); !exist.equalsIgnoreCase("no") && !exist.equalsIgnoreCase("yes") ; exist = in.readLine()) {
+                                if(exist.equalsIgnoreCase("quit")) {
+                                    s.close();
+                                }
+                                out.println("Enter valid Input!!");
+                                out.flush();
+                            }
+                            if(exist.equalsIgnoreCase("yes")){
+                                break;
+                            }
+                            out.print("\nOK " + name + ", Please Enter the symbol of the item that you want to bid : ");
+                            out.flush();
+                        }
+
+
+                    }
 
                 Item item = item_map.get(symbol);
                 out.println("\nPlease Wait.......");
                 out.flush();
                 synchronized (item) {
 
-                    out.println("\nYes " + name + ", The CURRENT PRICE of the " + symbol + " item is : " + item.get_price());
+                    //out.println("\nYes " + name + ", The CURRENT PRICE of the " + symbol + " item is : " + item.get_price());
                     out.print("\nPlease enter your price to bid : ");
                     out.flush();
                     String price = "0";
@@ -94,7 +117,6 @@ public class Server extends Thread {
                         out.flush();
                         s.close();
                     }
-
 
                     out.println("\nOk " + name + ",Your price accepted. Please enter 'confirm' and press enter to confirm bidding.");
                     out.println("Or enter 'quit' and press enter to quit bidding.");
@@ -122,17 +144,17 @@ public class Server extends Thread {
                         out.println(name + ",Your bid is expired. Due to TimeOut");
                     }
                     out.println("\nThank You for using Stock Exchange Server.");
+                    out.println("==================================================================");
                     out.flush();
                 }
 
-                //s.close();
             }
         } catch (IOException | InterruptedException iOException) {
             this.s.close();
         }
     }
 
-    private void handle_1() {// Implement methods for Pub-Sub Sever
+    private void handle_1()  {// Implement methods for Pub-Sub Sever
 
         try {
 
@@ -206,7 +228,7 @@ public class Server extends Thread {
                                 if (subscriptionArray.contains(ItemMap.bidList.get(ItemMap.bidList.size() - 1)) && !ItemMap.bidList.isEmpty()) {
                                     if (!ItemMap.bidList.isEmpty()) {
                                         out.flush();
-                                        out.print("\ritem " + ItemMap.bidList.get(ItemMap.bidList.size() - 1) + " BID Changed to \t:\t " + item_map.get(ItemMap.bidList.get(ItemMap.bidList.size() - 1)).get_price() + "\n");
+                                        out.print("\ritem " + ItemMap.bidList.get(ItemMap.bidList.size() - 1) + " BID Price Changed to \t:\t " + item_map.get(ItemMap.bidList.get(ItemMap.bidList.size() - 1)).get_price() + "\n");
                                         out.flush();
                                     }
                                     if (!ItemMap.bidList.isEmpty())
@@ -224,10 +246,8 @@ public class Server extends Thread {
                     } catch (Exception e) {
 
                     }
-
                 }
             };
-
 
             while (s.isConnected()) {
                 out.flush();
@@ -251,9 +271,21 @@ public class Server extends Thread {
                     s.close();
                 }
                 queryTokens = query.split(" ");
+                boolean isNumber = false;
+                isNumber = false;
+                int count = 0;
+                if (queryTokens.length >= 2) {
+                    for (char i : queryTokens[1].toCharArray()) {
+                        if(Character.isDigit(i)){
+                            count++;
+                        }
+                        if(count == queryTokens[1].length()){
+                            isNumber =true;
+                        }
+                    }
+                }
 
-                if (item_map.containsKey(queryTokens[0]) && !item_map.containsKey(queryTokens[1])) {
-
+                if (item_map.containsKey(queryTokens[0]) && isNumber) {
                     String sym = queryTokens[0];
                     int securityNumber = 0;
                     float profit = 0;
@@ -263,7 +295,6 @@ public class Server extends Thread {
                     } catch (Exception e) {
                         out.print("\rEntered Number format is invalid!!");
                         out.flush();
-
                     }
 
                     if (item_map.get(sym).getSecurity() == securityNumber) {
@@ -276,23 +307,33 @@ public class Server extends Thread {
                     } else {
                         out.print(" | -1");
                     }
+                    out.flush();
 
                 } else if (queryTokens[0].equals("PRFT")) {
+                    HashSet<String> currentProfit = new HashSet<>();
 
                     for (int i = 1; i < queryTokens.length; i++) {
-                        if ((item_map.containsKey(queryTokens[i]))) {
+                        if (item_map.containsKey(queryTokens[i])) {
                             if (!subscribeMap.contains(queryTokens[i])) {
                                 subscribeMap.add(queryTokens[i]);
                             }
+                            currentProfit.add(queryTokens[i]);
                             System.out.println(name + ", Subscribe to the Profit on " + queryTokens[i] + " item.");
                             out.print("0 ");
                             if (!profitT.isAlive()) {
                                 profitT.start();
                             }
                         } else {
-                            out.print("-1");
+                            out.print("-1 ");
                         }
+                        out.flush();
                     }
+                    out.println("");
+                    for (String i: currentProfit) {
+                        out.println("\ritem " +i+ " profit is \t:\t " + item_map.get(i).getProfit());
+                    }
+                    currentProfit.clear();
+
 
                 } else if (queryTokens[0].equals("BID")) {
 
@@ -310,6 +351,7 @@ public class Server extends Thread {
                         } else {
                             out.print("-1");
                         }
+                        out.flush();
 
                     }
                 } else {
@@ -330,13 +372,12 @@ public class Server extends Thread {
                 out.println("\r\n==================================================================");
             }
         } catch (IOException iOException) {
-
             try {
                 this.s.close();
             } catch (IOException e) {
                 e.printStackTrace();
-                //System.out.println("Trows Exception Dapiya ");
             }
+
         }
     }
 }
