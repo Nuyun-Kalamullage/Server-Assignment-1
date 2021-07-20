@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
 
         final int[] givenTime = new int[2];
-        try { //yo man thaniyen awe.
+        try {
             givenTime[1] = Integer.parseInt(args[0]) * 60_000;
             Item.setBiddingTime(Integer.parseInt(args[0]) * 60_000);
         } catch (NumberFormatException e) {

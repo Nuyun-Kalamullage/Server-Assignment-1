@@ -43,7 +43,6 @@ public class Server extends Thread {
             out.flush();
             String name;
 
-            //problem here...
             for (name = in.readLine(); Item.nameSet.contains(name) || name.equals("quit"); name = in.readLine()) {
                 if (name.equals("quit"))
                     s.close();
@@ -94,7 +93,6 @@ public class Server extends Thread {
                 out.flush();
                 synchronized (item) {
 
-                    //out.println("\nYes " + name + ", The CURRENT PRICE of the " + symbol + " item is : " + item.get_price());
                     out.print("\nPlease enter your price to bid : ");
                     out.flush();
                     String price = "0";
@@ -170,7 +168,7 @@ public class Server extends Thread {
             out.flush();
             String name;
 
-            //problem here...
+
             for (name = in.readLine(); Item.nameSet.contains(name) || name.toLowerCase().equals("quit"); name = in.readLine()) {
                 if (name.toLowerCase().equals("quit")) {
                     out.println("Exiting the Auction Sever ......");
@@ -302,7 +300,6 @@ public class Server extends Thread {
                         out.print("0 |");
                         out.print(" Profit Changed");
                         System.out.println(name + ", Change the Profit in item " + sym + " to : " + profit);
-                        ItemMap.profitMap.put(sym, item_map.get(sym).getProfit());
                         ItemMap.profitList.add(sym);
                     } else {
                         out.print(" | -1");
