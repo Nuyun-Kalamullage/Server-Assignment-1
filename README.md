@@ -2,6 +2,10 @@
 
     completed date: 21-07-2021
 
+
+<img  alt="Coding"  src="https://github.com/Nuyun-Kalamullage/Server-Assignment-1/blob/Public/stock%20server.png">
+
+
 Our Project Includes, 
 
     *	5 java Files ( Main Class is in Main.java file)
